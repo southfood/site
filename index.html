@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Southland Food Co-op</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUGFdjYAACAAAFAAGq1chRAAAAAElFTkSuQmCC">
+        <link rel="stylesheet" href="stylesheet.css">
+        <script src="globals.js"></script>
+        <script src="api.js"></script>
+    </head>
+    <body>
+        <span id="version">page:1.1&#10240;</span>
+        <div class="hidden" id="header">
+            <h3 id="name"></h3>
+            <form id="login-form">
+                <!-- <select style="min-width:6em" name="username" id="username"></select> -->
+                <label for="username">Username:</label>
+                <input type="text" style="min-width:6em" name="username" id="username">
+                <label for="password">Password:</label>
+                <input style="width:6em" type="password" name="password" id="password">
+                <input disabled value="Log In" id="login" name="login" type="submit">
+            </form>
+            <button disabled id="favourites-button" onclick="favouritesModeToggle()">Edit Favourites</button>
+        </div>
+        <div id="tabs-spacer">
+            <div class="tab-list">
+                <div aria-disabled="true" class="tab">Favourites</div>
+                <div class="tab selected">All</div>
+                <div class="tab">Nuts</div>
+                <div class="tab">Seeds</div>
+                <div class="tab">Fruit</div>
+                <div class="tab">Baking</div>
+                <div class="tab">Other</div>
+                <div aria-disabled="true" class="tab ordering">Review Order</div>
+            </div>
+        </div>
+        <div style="display:none">
+            <span id="price-template" class="price">
+                <span class="money-sign">$</span><span class="dollars">0</span>.<span class="cents">00</span>
+            </span>
+            <li id="template">
+                <label>
+                    <img class="star" src="star.png" width="15">
+                    <input type="checkbox">
+                </label>
+                <div class="order-info">
+                    <!-- <span class="double-line">@ </span> -->
+                    <span class="price"></span>
+                    <br class="double-line">
+                    <span class="quantity-info">
+                        <span>x<span class="quantity">1</span></span><span>=</span><span class="price finalprice"></span>
+                    </span>
+                </div>
+            </li>
+        </div>
+        <div id="list"></div>
+        <div id="preview-info" class="ordering">
+            <button id="place-order">Place Order</button>
+            <span class="price"></span>
+            <textarea id="special-instructions" placeholder="Special Instructions:"></textarea>
+        </div>
+        <div id="numpad">
+            <div class="numpad-row">
+                <span id="num1">1</span>
+                <span id="num2">2</span>
+                <span id="num3">3</span>
+            </div>
+            <div class="numpad-row">
+                <span id="num4">4</span>
+                <span id="num5">5</span>
+                <span id="num6">6</span>
+            </div>
+            <!-- <div class="numpad-row">
+                <span id="num7">7</span>
+                <span id="num8">8</span>
+                <span id="num9">9</span>
+            </div> -->
+            <div class="numpad-row">
+                <button class="numpad-button" onclick="closeNumpad(true)" id="numpad-cancel">&cross;</button>
+                <button class="numpad-button" disabled id="numpad-ok">&checkmark;</button>
+            </div>
+        </div>
+        <div class="loader" id="loading">
+            <span id="loading-text">
+                <span></span>
+                <span style="text-align:center">Loading...<br><span id="countdown">30</span></span>
+                <span>If this takes longer than 30 seconds, try reloading the page.</span>
+            </span>
+        </div>
+        <div class="hidden" id="alert">
+            <div>
+                <span>Alert</span>
+                <button id="alert-dismiss" onclick="document.getElementById('alert').classList.add('hidden')">OK</button>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>

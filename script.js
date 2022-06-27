@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "1.1";
+const SCRIPT_VERSION = "1.2";
 document.getElementById("version").innerHTML += `script:${SCRIPT_VERSION}&#10240;api:${API_VERSION}&#10240;globals:${GLOBALS_VERSION}`;
 const List = document.getElementById("list");
 const PriceTemplate = document.getElementById("price-template");
@@ -18,6 +18,7 @@ const UsernameSelect = document.getElementById("username");
 const Countdown = document.getElementById("countdown");
 const Loading = document.getElementById("loading");
 const PlaceOrderButton = document.getElementById("place-order");
+const FavouritesCancel = document.getElementById("favourites-cancel");
 
 async function login(data){
     let username = data.get('username');
@@ -45,22 +46,36 @@ LoginForm.addEventListener("submit",async e=>{
     loadList();
 });
 
-function favouritesModeToggle(){
+function favouritesModeToggle(save = false){
     let inFavouritesMode = List.classList.contains("favourites-mode");
     if(inFavouritesMode){
         FavouritesButton.innerText = "Edit Favourites";
         List.classList.remove("favourites-mode");
         FavouritesTab.style.display = null;
         for(let elem of document.querySelectorAll(".ordering")) elem.style.display = null;
-        UserData.favourites = [];
-        document.querySelectorAll("li.favourite").forEach(li=>{UserData.favourites.push(li.id)});
-        saveFavourites(UserData._id, UserData.favourites);
+        FavouritesCancel.style.display = "none";
+        if(save){
+            UserData.favourites = [];
+            document.querySelectorAll("li.favourite").forEach(li=>{UserData.favourites.push(li.id)});
+            saveFavourites(UserData._id, UserData.favourites).then(result=>{
+                if(result.error) return alert("Favourites Failed to Save!<br>Click Edit Favourites > Save Favourites to try again.");
+                console.log("Favouries Saved Successfully");
+            })
+        }else{
+            for(let li of List.children){
+                li.classList[UserData.favourites.includes(li.id) ? 'add' : 'remove']('favourite');
+            }
+        }
     }else{
         FavouritesButton.innerText = "Save Favourites";
         List.classList.add("favourites-mode");
         FavouritesTab.style.display = "none";
+        FavouritesCancel.style.display = "block";
         for(let elem of document.querySelectorAll(".ordering")) elem.style.display = "none";
         closeNumpad(true);
+        if(SelectedCategory.isSameNode(PreviewTab) || SelectedCategory.isSameNode(FavouritesTab)){
+            FavouritesTab.nextElementSibling.click();
+        }
     }
 }
 
@@ -278,6 +293,7 @@ function showLoading(){
 }
 
 PlaceOrderButton.addEventListener("click",async e=>{
+    console.log("Processing Order");
     alert("Processing...");
     document.getElementById("alert-dismiss").style.display = "none";
     var ORDER = {};
@@ -285,11 +301,16 @@ PlaceOrderButton.addEventListener("click",async e=>{
         ORDER[item.id] = parseInt(item.querySelector(".quantity").innerText);
     }
     let result = await order(ORDER, SpecialInstructions.value);
-    if(result.error) return alert("Error placing Order!");
-    return alert("Order Placed. We will send you an email to acknowlege.", ()=>{window.location.reload()});
+    if(result.error){
+        console.error(result.error);
+        return alert("Error placing Order!");
+    }
+    console.log();
+    return alert("Order Placed. We will send you an email once we acknowlege your order.", ()=>{window.location.reload()});
 });
 
 async function loadAccounts(){
+    console.log("Attempting to load account Data");
     showLoading();
     let result = await getAccounts();
     if(result.error) result = await getAccounts();
@@ -297,6 +318,7 @@ async function loadAccounts(){
         alert(`Failed to Load Accounts!<br>Click OK to try again.`, loadAccounts);
         return;
     }
+    console.log("Account Data Loaded");
     let accounts = result.items;
     accounts.forEach(account=>{
         AllAccounts[account.title.toLowerCase()] = account;

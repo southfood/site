@@ -10,7 +10,7 @@
         <script src="api.js"></script>
     </head>
     <body>
-        <span id="version">page:1.1&#10240;</span>
+        <span id="version">page:1.2&#10240;</span>
         <div class="hidden" id="header">
             <h3 id="name"></h3>
             <form id="login-form">
@@ -21,7 +21,10 @@
                 <input style="width:6em" type="password" name="password" id="password">
                 <input disabled value="Log In" id="login" name="login" type="submit">
             </form>
-            <button disabled id="favourites-button" onclick="favouritesModeToggle()">Edit Favourites</button>
+            <span style="display:flex">
+                <button disabled id="favourites-button" onclick="favouritesModeToggle(true)">Edit Favourites</button>
+                <button style="display:none" id="favourites-cancel" onclick="favouritesModeToggle()">Cancel</button>
+            </span>
         </div>
         <div id="tabs-spacer">
             <div class="tab-list">

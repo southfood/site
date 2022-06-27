@@ -33,8 +33,12 @@ body{
     width:100%;
     display:flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     position: relative;
+}
+
+#header > *{
+    margin:0px 2em 0px 2em;
 }
 
 #header input[type=submit]:disabled::after{

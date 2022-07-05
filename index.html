@@ -4,13 +4,15 @@
         <title>Southland Food Co-op</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-        <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAtJREFUGFdjYAACAAAFAAGq1chRAAAAAElFTkSuQmCC">
+        <link rel="icon" href="icon.png">
         <link rel="stylesheet" href="stylesheet.css">
+        <link rel="manifest" href="manifest.webmanifest">
+        <meta name="mobile-web-app-capable" content="yes">
         <script src="globals.js"></script>
         <script src="api.js"></script>
     </head>
     <body>
-        <span id="version">page:1.2&#10240;</span>
+        <span id="version">page:2.0&#10240;</span>
         <div class="hidden" id="header">
             <h3 id="name"></h3>
             <form id="login-form">
@@ -59,9 +61,9 @@
         </div>
         <div id="list"></div>
         <div id="preview-info" class="ordering">
-            <button id="place-order">Place Order</button>
             <span class="price"></span>
             <textarea id="special-instructions" placeholder="Special Instructions:"></textarea>
+            <button id="place-order">Place Order</button>
         </div>
         <div id="numpad">
             <div class="numpad-row">
@@ -80,8 +82,8 @@
                 <span id="num9">9</span>
             </div> -->
             <div class="numpad-row">
-                <button class="numpad-button" onclick="closeNumpad(true)" id="numpad-cancel">&cross;</button>
-                <button class="numpad-button" disabled id="numpad-ok">&checkmark;</button>
+                <button class="numpad-button badbutton" onclick="closeNumpad(true)" id="numpad-cancel">&cross;</button>
+                <button class="numpad-button goodbutton" onclick="closeNumpad()" disabled id="numpad-ok">&checkmark;</button>
             </div>
         </div>
         <div class="loader" id="loading">
@@ -91,10 +93,17 @@
                 <span>If this takes longer than 30 seconds, try reloading the page.</span>
             </span>
         </div>
-        <div class="hidden" id="alert">
+        <div class="hidden dialog" id="alert">
             <div>
                 <span>Alert</span>
                 <button id="alert-dismiss" onclick="document.getElementById('alert').classList.add('hidden')">OK</button>
+            </div>
+        </div>
+        <div class="hidden dialog" id="confirm">
+            <div>
+                <span>Confirm</span>
+                <button class="badbutton" id="confirm-no" onclick="document.getElementById('confirm').classList.add('hidden')">No</button>
+                <button class="goodbutton" id="confirm-yes" onclick="document.getElementById('confirm').classList.add('hidden')">Yes</button>
             </div>
         </div>
         <script src="script.js"></script>

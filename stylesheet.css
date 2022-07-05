@@ -1,4 +1,29 @@
 
+*:not(button, input, textarea){
+    background-color: rgb(200,255,230);
+    border:0px solid rgb(0,100,0);
+}
+
+button{
+    padding:5px;
+    border-radius:5px;
+    border:1px solid rgb(0,100,0);
+    background-image:linear-gradient(to bottom, rgb(190, 255, 190), rgb(130, 255, 130));
+}
+
+button[disabled]{
+    border-color:rgb(100,100,100);
+    background-image:linear-gradient(rgb(200,200,200), rgb(200,200,200));
+}
+
+button:hover{
+    background-image:linear-gradient(to bottom, rgb(190, 255, 190), rgb(170, 255, 170));
+}
+
+button:active{
+    background-image:linear-gradient(to top, rgb(190, 255, 190), rgb(130, 255, 130));
+}
+
 #version{
     position:fixed;
     bottom:0px;
@@ -8,7 +33,7 @@
 
 #version::after{
     padding-left:1em;
-    content:"style: 1.1"
+    content:"style: 2.0"
 }
 
 html{
@@ -26,6 +51,7 @@ body{
     overflow-x:hidden;
     overflow-y:scroll;
     font-family: Arial, Helvetica, sans-serif;
+    overscroll-behavior-x: none;
 }
 
 #header{
@@ -41,22 +67,13 @@ body{
     margin:0px 2em 0px 2em;
 }
 
-#header input[type=submit]:disabled::after{
-    content: "Hello";
-    display:block;
-    width:100px;
-    height:100px;
-    background-color: red;
-}
-
 #tabs-spacer{
     display:flex;
     align-items: center;
     justify-content: center;
-    border:1px solid black;
+    border-width:1px;
     width:100%;
     position: sticky;
-    background-color: white;
     box-sizing: content-box;
     top:-1px;
     z-index: 2;
@@ -80,7 +97,7 @@ body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-s
 }
 
 .tab{
-    border:1px solid black;
+    border-width:1px;
     margin:5px;
     padding:10px;
     display:flex;
@@ -93,7 +110,7 @@ body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-s
 }
 
 .tab.selected{
-    background-color:azure;
+    background-color:rgb(100, 200, 253);
     cursor:context-menu;
     font-weight: bold;
 }
@@ -131,13 +148,13 @@ li.favourite .star{
 }
 
 li{
-    border:1px solid black;
+    border-width:1px;
     /* padding:3px; */
     min-height:2em;
     margin:-1px -1px 0px -1px;
     /* position:relative; */
     flex:1;
-    background-color:rgb(255,255,255);
+    /* background-color:rgb(255,255,255); */
     transition:background-color 300ms ease;
     display:flex;
     align-items: center;
@@ -152,16 +169,16 @@ li{
         box-shadow:0px 0px 10px 3px rgba(0,0,0,0.2);
     }
 
-    li:active label{
+    li:active{
         background-color:rgba(0,0,0,0.2);
     }
     
     .tab:not(.selected):not([aria-disabled="true"]):hover{
-        background-color:rgb(250,255,255);
+        background-color:rgb(164, 241, 255);
     }
 
     .tab:not(.selected):not([aria-disabled="true"]):active{
-        background-color:rgb(240,240,255);
+        background-color:rgb(67, 163, 201);
     }
 
 }
@@ -178,12 +195,16 @@ li.hidden{
     display:none;
 }
 
+li *{
+    background-color:rgba(0,0,0,0);
+}
+
 /* li:not(li[style*="display:none;"]):nth-child(even){
     background-color:rgb(240,240,240);
 } */
 
 #list:not(.favourites-mode) > li.selected{
-    background-color:rgb(190,190,190);
+    background-color:rgb(126, 196, 132);
 }
 
 #list.favourites-mode > li.favourite{
@@ -204,7 +225,7 @@ label{
     padding-left:1em;
 }
 
-#list.favourites-mode input[type=checkbox], #list.favourites-mode .order-info, #alert.hidden{
+#list.favourites-mode input[type=checkbox], #list.favourites-mode .order-info, .dialog.hidden{
     display:none;
 }
 
@@ -217,9 +238,9 @@ label{
 
 .quantity{
     padding:0px 4px 0px 4px;
-    border:1px solid black;
+    border-width:1px;
     border-radius: 3px;
-    background-color: rgb(195, 228, 142);
+    background-color: rgb(171, 234, 236);
 }
 
 .quantity-info{
@@ -230,7 +251,7 @@ label{
 }
 
 .quantity.selected{
-    background-color: rgb(255, 245, 108);
+    background-color: rgb(255, 253, 163);
 }
 
 .money-sign{
@@ -268,23 +289,25 @@ li > * > * > *{
 
 #numpad{
     position:fixed;
-    background-color:white;
     border-radius:5px;
+    border-width:1px;
     top:100vh;
     opacity: 0;
     transition:top 400ms, opacity 400ms;
     user-select: none;
     z-index:4;
+    padding:2px;
 }
 
 #numpad.shown{
-    top:min(calc(100vh - 19em), 50vh);
+    top:min(calc(100vh - 17em), 50vh);
     opacity:1;
 }
 
 .numpad-row{
     display:flex;
     flex-direction:row;
+    background-color:rgba(0,0,0,0);
 }
 
 .numpad-row > *{
@@ -295,11 +318,12 @@ li > * > * > *{
     display: flex;
     align-items: center;
     justify-content: center;
-    border:1px solid black;
+    border-width:1px;
     margin:2px;
     border-radius: 5px;
     cursor:pointer;
     box-sizing: border-box;
+    background-color: white;
 }
 
 .numpad-row > *.ifcancel{
@@ -316,16 +340,32 @@ li > * > * > *{
     color:white;
 }
 
-#numpad-cancel{
-    background-color: red;
+.badbutton{
+    background-image: linear-gradient(to bottom, rgb(255,130,130), rgb(255,70,70));
 }
 
-#numpad-ok{
-    background-color: green;
+.badbutton:hover{
+    background-image: linear-gradient(to bottom, rgb(255,130,130), rgb(255,100,100));
+}
+
+.badbutton:active{
+    background-image: linear-gradient(to top, rgb(255,130,130), rgb(255,70,70));
+}
+
+.goodbutton{
+    background-image: linear-gradient(to bottom, rgb(190,255,190), rgb(70,255,70));
+}
+
+.goodbutton:hover{
+    background-image: linear-gradient(to bottom, rgb(190,255,190), rgb(100,255,100));
+}
+
+.goodbutton:active{
+    background-image: linear-gradient(to top, rgb(190,255,190), rgb(70,255,70));
 }
 
 #numpad-ok:disabled{
-    background-color:grey;
+    background-image:linear-gradient(grey, grey);
     cursor:default;
 }
 
@@ -350,13 +390,14 @@ li > * > * > *{
 }
 
 #place-order{
-    margin:3em;
+    margin-bottom:3em;
 }
 
 #special-instructions{
     max-width:50em;
     width:90vw;
     height:10em;
+    margin:3em;
 }
 
 .loader{
@@ -375,6 +416,7 @@ li > * > * > *{
     display:flex;
     align-items: center;
     justify-content: center;
+    background-color:rgba(0,0,0,0);
 }
 
 #loading-text{
@@ -385,6 +427,7 @@ li > * > * > *{
     flex-direction: column;
     padding-top:3em;
     height:calc(50vmin + 7em);
+    background-color: inherit;
 }
 
 @keyframes spin{
@@ -392,7 +435,7 @@ li > * > * > *{
     100%{transform: rotate(360deg)}
 }
 
-#alert{
+.dialog{
     display:flex;
     position:fixed;
     z-index:10;
@@ -405,9 +448,8 @@ li > * > * > *{
     justify-content: center;
 }
 
-#alert > *{
+.dialog > *{
     border-radius:1em;
-    background-color:white;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -415,15 +457,35 @@ li > * > * > *{
     max-width:50em;
     width:calc(100vw - 10em);
     padding:3em;
+    top:-3em;
+}
+
+.dialog *:not(button){
+    background-color:white;
 }
 
 #alert-dismiss{
-    position:absolute;
-    bottom:-1em;
     right:-1.5em;
     width:6em;
+    border:1px solid grey;
+}
+
+.dialog button{
+    position:absolute;
+    top:calc(100% + 1em);
+    cursor:pointer;
     padding:1em;
     border-radius:inherit;
-    border:1px solid grey;
-    cursor:pointer;
+}
+
+#confirm button{
+    width:6em;
+}
+
+#confirm-yes{
+    left:calc(50% + 1em);
+}
+
+#confirm-no{
+    right:calc(50% + 1em);
 }

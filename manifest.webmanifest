@@ -1,0 +1,14 @@
+{
+    "background_color":"#c8ffe6",
+    "description":"Southland Food Co-op Ordering Website",
+    "icons":[
+        {
+            "src":"icon.png",
+            "sizes":"256x256",
+            "type":"image/png"
+        }
+    ],
+    "name":"Southland Food Co-op",
+    "short_name":"SFC",
+    "start_url":"index.html"
+}

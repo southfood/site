@@ -1,5 +1,5 @@
 const URL = "https://southlandfoodco-op.wixsite.com/website/_functions/";
-const API_VERSION = "1.1";
+const API_VERSION = "2.0";
 var wait5sec = new Promise(resolve => {
     window.setTimeout(resolve(), 5000);
 });
@@ -44,6 +44,21 @@ function alert(message = "!", callback = ()=>{}){
     document.getElementById("alert-dismiss").addEventListener("click",callback,{'once':true});
 }
 
+function confirm(message = "Error: no input given"){
+    let C = document.getElementById("confirm");
+    C.querySelector('span').innerHTML = message;
+    C.classList.remove('hidden');
+    return new Promise(resolve => {
+        let clickHandler = e => {
+            C.querySelector("#confirm-yes").removeEventListener("click", clickHandler);
+            C.querySelector("#confirm-no").removeEventListener("click", clickHandler);
+            return resolve(e.target.id == "confirm-yes");
+        }
+        C.querySelector("#confirm-yes").addEventListener("click", clickHandler);
+        C.querySelector("#confirm-no").addEventListener("click", clickHandler);
+    });
+}
+
 async function order(orderData = {}, instructions=""){
     let url = new URLSearchParams();
     url.append('uid', UserData._id);
@@ -51,6 +66,13 @@ async function order(orderData = {}, instructions=""){
     url.append('instructions', instructions);
     return await API("order", url);
 }
+
+window.addEventListener("beforeinstallprompt",e=>{
+    alert('Website available as installable Web Application');
+    console.log(e);
+    e.preventDefault();
+    // e.prompt();
+})
 
 // async function email(address = "elliot.mcleish@gmail.com", message = "none"){
 //     // let body = new FormData();

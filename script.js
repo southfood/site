@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "1.2";
+const SCRIPT_VERSION = "2.0";
 document.getElementById("version").innerHTML += `script:${SCRIPT_VERSION}&#10240;api:${API_VERSION}&#10240;globals:${GLOBALS_VERSION}`;
 const List = document.getElementById("list");
 const PriceTemplate = document.getElementById("price-template");
@@ -205,18 +205,17 @@ function updatePrice(li){
 }
 
 Numpad.addEventListener("click",e=>{
-    if(e.target.id == 'numpad-ok'){
-        closeNumpad();
-    }else if(e.target.id){
-        Numpad.querySelector("#numpad-ok").disabled = false;
-        let selected = Numpad.querySelector(".ifok");
-        if(selected) selected.classList.remove("ifok");
-        e.target.classList.add("ifok");
-        let selectedQuantity = List.querySelector(".quantity.selected");
-        if(selectedQuantity){
-            selectedQuantity.innerText = e.target.innerText;
-            updatePrice(findLI(selectedQuantity));
-        }
+    if(!e.target.id) return;
+    let idInfo = e.target.id.match(/num(\d+)/);
+    if(!idInfo) return;
+    Numpad.querySelector("#numpad-ok").disabled = false;
+    let selected = Numpad.querySelector(".ifok");
+    if(selected) selected.classList.remove("ifok");
+    e.target.classList.add("ifok");
+    let selectedQuantity = List.querySelector(".quantity.selected");
+    if(selectedQuantity){
+        selectedQuantity.innerText = idInfo[1];
+        updatePrice(findLI(selectedQuantity));
     }
     e.stopPropagation();
 });
@@ -293,6 +292,7 @@ function showLoading(){
 }
 
 PlaceOrderButton.addEventListener("click",async e=>{
+    if(!await confirm("Are You sure you want to place your Order?")) return;
     console.log("Processing Order");
     alert("Processing...");
     document.getElementById("alert-dismiss").style.display = "none";

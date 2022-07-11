@@ -1,5 +1,5 @@
 const URL = "https://southlandfoodco-op.wixsite.com/website/_functions/";
-const API_VERSION = "2.0";
+const API_VERSION = "2.1";
 var wait5sec = new Promise(resolve => {
     window.setTimeout(resolve(), 5000);
 });
@@ -21,13 +21,13 @@ async function getPriceList(){
     return await API("pricelist")
 }
 
-async function login(data){
-    let url = new URLSearchParams();
-    for(let pair of data){
-        url.append(pair[0], pair[1]);
-    }
-    return await API("login", url);
-}
+// async function login(data){
+//     let url = new URLSearchParams();
+//     for(let pair of data){
+//         url.append(pair[0], pair[1]);
+//     }
+//     return await API("login", url);
+// }
 
 async function saveFavourites(uid, favourites){
     let url = new URLSearchParams();
@@ -67,64 +67,9 @@ async function order(orderData = {}, instructions=""){
     return await API("order", url);
 }
 
-window.addEventListener("beforeinstallprompt",e=>{
-    alert('Website available as installable Web Application');
+window.addEventListener("beforeinstallprompt", e=>{
+    alert('This Website is available as an installable Web Application');
     console.log(e);
     e.preventDefault();
     // e.prompt();
 })
-
-// async function email(address = "elliot.mcleish@gmail.com", message = "none"){
-//     // let body = new FormData();
-//     // body.set("email", address);
-//     // body.set("message", message);
-//     // let result = await fetch("https://formspree.io/f/meqnwzkd",{
-//     //     method:"POST",
-//     //     headers:{
-//     //         "Content-Type":"multipart/form-data"
-//     //     },
-//     //     body,
-//     // });
-//     // console.log(await result.text())
-//     // console.log(result);
-//     // document.getElementById("self-mailer").submit();
-// }
-
-// document.getElementById('contact-form').addEventListener('submit', function(event) {
-//     event.preventDefault();
-//     // generate a five digit number for the contact_number variable
-//     this.contact_number.value = Math.random() * 100000 | 0;
-//     // these IDs from the previous steps
-//     emailjs.sendForm('contact_service', 'contact_form', this)
-//         .then(function() {
-//             console.log('SUCCESS!');
-//         }, function(error) {
-//             console.log('FAILED...', error);
-//         });
-// });
-
-// var Test = {
-//     "abcdefg":3,
-//     "alivuh":8,
-// };
-
-// Test[Symbol.iterator] = function() {
-//     let index = 0; // use index to track properties 
-//     let properties = Object.keys(this); // get the properties of the object 
-//     let done = false; // set to true when the loop is done 
-//     return { // return the next method, need for iterator 
-//         next: () => {
-//             done = (index >= properties.length);
-//             let value = "";
-            
-//             let id = properties[index];
-//             let quantity = this[id];
-//             console.log(id, quantity);
-            
-//             index++; // increment index
-//             return {done, value};
-//         }
-//     };
-// }
-
-// Promise.all(Test).then(console.log.bind(console));

@@ -12,9 +12,9 @@
         <script src="api.js"></script>
     </head>
     <body>
-        <span id="version">page:2.0&#10240;</span>
+        <span id="version">page:2.1&#10240;</span>
         <div class="hidden" id="header">
-            <h3 id="name"></h3>
+            <h1 id="name"></h1>
             <form id="login-form">
                 <!-- <select style="min-width:6em" name="username" id="username"></select> -->
                 <label for="username">Username:</label>
@@ -23,13 +23,13 @@
                 <input style="width:6em" type="password" name="password" id="password">
                 <input disabled value="Log In" id="login" name="login" type="submit">
             </form>
-            <span style="display:flex">
+            <div id="menu">
                 <button disabled id="favourites-button" onclick="favouritesModeToggle(true)">Edit Favourites</button>
-                <button style="display:none" id="favourites-cancel" onclick="favouritesModeToggle()">Cancel</button>
-            </span>
+                <button onclick="logout()" id="logout-button">Log Out</button>
+            </div>
         </div>
         <div id="tabs-spacer">
-            <div class="tab-list">
+            <div id="tab-list" class="tab-list">
                 <div aria-disabled="true" class="tab">Favourites</div>
                 <div class="tab selected">All</div>
                 <div class="tab">Nuts</div>
@@ -39,25 +39,6 @@
                 <div class="tab">Other</div>
                 <div aria-disabled="true" class="tab ordering">Review Order</div>
             </div>
-        </div>
-        <div style="display:none">
-            <span id="price-template" class="price">
-                <span class="money-sign">$</span><span class="dollars">0</span>.<span class="cents">00</span>
-            </span>
-            <li id="template">
-                <label>
-                    <img class="star" src="star.png" width="15">
-                    <input type="checkbox">
-                </label>
-                <div class="order-info">
-                    <!-- <span class="double-line">@ </span> -->
-                    <span class="price"></span>
-                    <br class="double-line">
-                    <span class="quantity-info">
-                        <span>x<span class="quantity">1</span></span><span>=</span><span class="price finalprice"></span>
-                    </span>
-                </div>
-            </li>
         </div>
         <div id="list"></div>
         <div id="preview-info" class="ordering">
@@ -104,6 +85,31 @@
                 <span>Confirm</span>
                 <button class="badbutton" id="confirm-no" onclick="document.getElementById('confirm').classList.add('hidden')">No</button>
                 <button class="goodbutton" id="confirm-yes" onclick="document.getElementById('confirm').classList.add('hidden')">Yes</button>
+            </div>
+        </div>
+        <div style="display:none">
+            <span id="price-template" class="price">
+                <span class="money-sign">$</span><span class="dollars">0</span>.<span class="cents">00</span>
+            </span>
+            <li id="template">
+                <label>
+                    <img class="star" src="star.png" width="15">
+                    <input type="checkbox">
+                </label>
+                <div class="order-info">
+                    <!-- <span class="double-line">@ </span> -->
+                    <span class="price"></span>
+                    <br class="double-line">
+                    <span class="quantity-info">
+                        <span>x<span class="quantity">1</span></span><span>=</span><span class="price finalprice"></span>
+                    </span>
+                </div>
+            </li>
+        </div>
+        <div id="favourites-menu">
+            <div class="tab-list">
+                <button id="favourites-save" onclick="favouritesModeToggle(true)">Save Favourites</button>
+                <button class="badbutton" id="favourites-cancel" onclick="favouritesModeToggle()">Cancel</button>
             </div>
         </div>
         <script src="script.js"></script>

@@ -33,7 +33,7 @@ button:active{
 
 #version::after{
     padding-left:1em;
-    content:"style: 2.0"
+    content:"style: 2.1"
 }
 
 html{
@@ -55,12 +55,15 @@ body{
 }
 
 #header{
-    margin:20px;
+    padding: 10px;
+    min-height: 5em;
     width:100%;
     display:flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     position: relative;
+    max-width:50em;
 }
 
 #header > *{
@@ -92,8 +95,9 @@ body{
     user-select: none;
 }
 
-body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-spacer, body:not(.logged-in) #favourites-button, body.logged-in #login-form, #header.hidden, #loading.hidden{
-    display:none;
+#name{
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 .tab{
@@ -107,6 +111,24 @@ body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-s
     flex:1;
     max-width:8em;
     cursor:pointer;
+    position: relative;
+}
+
+.tab::before, .tab::after{
+    position:absolute;
+    top:0px;
+    font-size: small;
+    opacity:0.5;
+}
+
+.tab::before{
+    left:2px;
+    content:attr(items-present);
+}
+
+.tab::after{
+    right:2px;
+    content:"("attr(items-selected)")";
 }
 
 .tab.selected{
@@ -121,6 +143,10 @@ body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-s
     cursor:context-menu;
 }
 
+.tab[aria-disabled="true"]::before, .tab[aria-disabled="true"]::after{
+    content:"";
+}
+
 .ordering[aria-disabled="true"] button{
     display:none;
 }
@@ -131,9 +157,14 @@ body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-s
     flex-direction: column;
     align-items: stretch;
     margin:0px;
+    margin-bottom:3em;
     padding:0px;
     max-width:50em;
     width:100%;
+}
+
+.favourites-mode #list{
+    margin-bottom: 6em;
 }
 
 .star{
@@ -203,11 +234,15 @@ li *{
     background-color:rgb(240,240,240);
 } */
 
-#list:not(.favourites-mode) > li.selected{
+.favourites-mode #list li{
+    border-color:rgb(95, 100, 0);
+}
+
+li.selected{
     background-color:rgb(126, 196, 132);
 }
 
-#list.favourites-mode > li.favourite{
+.favourites-mode #list li.favourite{
     background-color:rgb(247, 240, 141);
 }
 
@@ -221,11 +256,11 @@ label{
     position: relative;
 }
 
-#list.favourites-mode label{
+.favourites-mode #list label{
     padding-left:1em;
 }
 
-#list.favourites-mode input[type=checkbox], #list.favourites-mode .order-info, .dialog.hidden{
+.favourites-mode #list input[type=checkbox], .favourites-mode #list .order-info{
     display:none;
 }
 
@@ -342,6 +377,7 @@ li > * > * > *{
 
 .badbutton{
     background-image: linear-gradient(to bottom, rgb(255,130,130), rgb(255,70,70));
+    border-color:rgb(100,0,0);
 }
 
 .badbutton:hover{
@@ -385,19 +421,19 @@ li > * > * > *{
 
 #preview-info .price{
     position:absolute;
-    top:5px;
+    top:calc(-3em + 5px);
     right:0px;
 }
 
 #place-order{
-    margin-bottom:3em;
+    margin:3em;
 }
 
 #special-instructions{
     max-width:50em;
     width:90vw;
     height:10em;
-    margin:3em;
+    margin-top:1em;
 }
 
 .loader{
@@ -488,4 +524,27 @@ li > * > * > *{
 
 #confirm-no{
     right:calc(50% + 1em);
+}
+
+#menu{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    max-width:30em;
+    width:inherit;
+}
+
+#favourites-menu{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    width:100vw;
+    border-width:1px;
+    position:fixed;
+    bottom:-1px;
+}
+
+body:not(.favourites-mode) #favourites-menu, body:not(.logged-in) #menu, .favourites-mode #menu, body.logged-in #version, body:not(.logged-in) #name,body:not(.logged-in) #tabs-spacer, body:not(.logged-in) #favourites-button, body.logged-in #login-form, .hidden{
+    display:none !important;
 }

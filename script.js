@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "2.0";
+const SCRIPT_VERSION = "2.1";
 document.getElementById("version").innerHTML += `script:${SCRIPT_VERSION}&#10240;api:${API_VERSION}&#10240;globals:${GLOBALS_VERSION}`;
 const List = document.getElementById("list");
 const PriceTemplate = document.getElementById("price-template");
@@ -19,38 +19,58 @@ const Countdown = document.getElementById("countdown");
 const Loading = document.getElementById("loading");
 const PlaceOrderButton = document.getElementById("place-order");
 const FavouritesCancel = document.getElementById("favourites-cancel");
+const Menu = document.getElementById("menu");
+const TabsSpacer = document.getElementById("tabs-spacer");
+const TabList = document.getElementById("tab-list");
+TabsSpacer.appendChild(TabList);
 
-async function login(data){
-    let username = data.get('username');
-    let password = data.get('password');
+function login(){
+    let accountInfo = JSON.parse(window.localStorage.getItem("account")) || new FormData(LoginForm);
+    let username = accountInfo.username || accountInfo.get("username");
+    let password = accountInfo.password || accountInfo.get("password");
     let account = AllAccounts[username.toLowerCase()];
     if(!account) return {"error":"Incorrect Username"};
-    return account.password == password ?account:{"error":"Incorrect Password"};
-}
-
-LoginForm.addEventListener("submit",async e=>{
-    document.getElementById("password").blur();
-    e.preventDefault();
-    let data = new FormData(LoginForm);
-    // LoginForm.querySelector("input[type=submit]").disabled = true;
-    let result = await login(data);
-    if(result.error) return alert("Incorrect Username or Password");
-    // LoginForm.querySelector("input[type=submit]").disabled = false;
-    /*if(result.error == 'Failed to fetch') result = await login(data);
-    if(result.error == "Incorrect Password") return alert("Incorrect Password!");
-    if(result.error) return alert("Failed to Log In!");*/
-    UserData = result;
+    if(account.password !== password) return {"error":"Incorrect Password"};
+    window.localStorage.setItem("account", JSON.stringify({username, password}));
+    UserData = account;
     if(!UserData.favourites) UserData.favourites = [];
     document.getElementById("name").innerText = UserData.title;
     document.body.classList.add("logged-in");
     loadList();
+    return UserData;
+}
+
+async function logout(){
+    if(!await confirm("Are you sure you want to Log Out?")) return;
+    window.localStorage.clear();
+    window.location.reload();
+}
+
+async function saveOrder(){
+    let order = {};
+    document.querySelectorAll("li.selected").forEach(li=>{order[li.id]=li.querySelector(".quantity").innerText});
+    window.localStorage.setItem("order", JSON.stringify(order));
+    console.log("Saved Order");
+}
+
+LoginForm.addEventListener("submit", e=>{
+    document.getElementById("password").blur();
+    e.preventDefault();
+    let result = login();
+    if(result.error) return alert("Incorrect Username or Password");
 });
 
+window.addEventListener("scroll",e=>{
+    const TabsBox = TabsSpacer.getBoundingClientRect();
+    if(TabsBox.y == -1) return TabsSpacer.style.boxShadow = "0px 0px 12px 3px rgb(0 0 0 / 40%)";
+    TabsSpacer.style.boxShadow = null;
+})
+
 function favouritesModeToggle(save = false){
-    let inFavouritesMode = List.classList.contains("favourites-mode");
+    let inFavouritesMode = document.body.classList.contains("favourites-mode");
     if(inFavouritesMode){
         FavouritesButton.innerText = "Edit Favourites";
-        List.classList.remove("favourites-mode");
+        document.body.classList.remove("favourites-mode");
         FavouritesTab.style.display = null;
         for(let elem of document.querySelectorAll(".ordering")) elem.style.display = null;
         FavouritesCancel.style.display = "none";
@@ -68,7 +88,7 @@ function favouritesModeToggle(save = false){
         }
     }else{
         FavouritesButton.innerText = "Save Favourites";
-        List.classList.add("favourites-mode");
+        document.body.classList.add("favourites-mode");
         FavouritesTab.style.display = "none";
         FavouritesCancel.style.display = "block";
         for(let elem of document.querySelectorAll(".ordering")) elem.style.display = "none";
@@ -77,6 +97,7 @@ function favouritesModeToggle(save = false){
             FavouritesTab.nextElementSibling.click();
         }
     }
+    updateTabs();
 }
 
 function categoryRule(category){
@@ -90,6 +111,45 @@ function categoryRule(category){
         default:
             return (li, data)=>{return data.category.includes(category);}
     }
+}
+
+function updateTabs(){
+    const AllTabs = document.querySelectorAll(".tab");
+    let allRules = {};
+    let allValues = {};
+
+    AllTabs.forEach(tab => {
+        let name = tab.innerText.toLowerCase();
+        let rule = categoryRule(name);
+        allRules[name] = rule;
+        allValues[name] = {
+            present:0,
+            selected:0,
+        };
+    });
+
+    for(const id in IndexedList){
+        const itemData = IndexedList[id];
+        const li = document.getElementById(id);
+        for(const name in allRules){
+            const rule = allRules[name];
+            if(!rule(li, itemData)) continue;
+            allValues[name].present++;
+            const countingClass = document.body.classList.contains("favourites-mode") ? "favourite" : "selected";
+            if(li.classList.contains(countingClass))
+            allValues[name].selected++;
+        }
+    }
+
+    AllTabs.forEach(tab => {
+        const name = tab.innerText.toLowerCase();
+        tab.setAttribute("items-present", allValues[name].present);
+        tab.setAttribute("items-selected", allValues[name].selected);
+    });
+
+    PreviewTab.setAttribute("items-present", "");
+    let disablePreview = document.querySelector("li.selected") ? 'false' : 'true';
+    for(const elem of document.querySelectorAll(".ordering")) elem.ariaDisabled = disablePreview;
 }
 
 document.querySelectorAll(".tab").forEach(tab=>{
@@ -123,6 +183,8 @@ function closeNumpad(reset = false){
         if(reset){
             quantity.innerText = ifcancel.innerText;
             updatePrice(findLI(quantity));
+        }else{
+            saveOrder();
         }
     }
     if(ifok) ifok.classList.remove("ifok");
@@ -148,13 +210,14 @@ function findLI(elem){
 }
 
 function selectionHandler(e){
-    let inFavouritesMode = List.classList.contains("favourites-mode");
+    let inFavouritesMode = document.body.classList.contains("favourites-mode");
     let li = findLI(e.target);
     if(inFavouritesMode){
         e.target.checked = !e.target.checked;
         let isFavourite = li.classList.contains("favourite");
         li.classList[isFavourite ? "remove" : "add"]("favourite");
         FavouritesTab.ariaDisabled = document.querySelector("li.favourite") ? 'false' : 'true';
+        updateTabs();
         return;
     }
     if(Numpad.classList.contains("shown")){
@@ -164,8 +227,8 @@ function selectionHandler(e){
     }
     li.classList[e.target.checked ? "add" : "remove"]("selected");
     updatePrice(li);
-    let disablePreview = document.querySelector("li.selected") ? 'false' : 'true'
-    for(let elem of document.querySelectorAll(".ordering")) elem.ariaDisabled = disablePreview;
+    saveOrder();
+    updateTabs();
 }
 
 function quantityHandler(e){
@@ -252,6 +315,8 @@ async function loadList(){
     }
     console.log("Load Successful");
     PriceList = result.items;
+    const SavedOrder = JSON.parse(window.localStorage.getItem("order")) || {};
+    SpecialInstructions.value = window.localStorage.getItem("instructions");
     PriceList.forEach(item => {
         IndexedList[item._id] = item;
         let newLI = Template.cloneNode(true);
@@ -272,9 +337,16 @@ async function loadList(){
         });
         finalPrice.classList.add('finalprice');
         List.appendChild(newLI);
+        if(SavedOrder[item._id]){
+            newLI.classList.add("selected");
+            newLI.querySelector("input[type=checkbox]").checked = true;
+            newLI.querySelector(".quantity").innerText = SavedOrder[item._id];
+            updatePrice(newLI);
+        }
     });
     FavouritesButton.disabled = false;
     Loading.classList.add("hidden");
+    updateTabs();
 }
 
 var doCountdown = false;
@@ -291,6 +363,10 @@ function showLoading(){
     Loading.classList.remove("hidden");
 }
 
+SpecialInstructions.addEventListener("input",e=>{
+    window.localStorage.setItem("instructions", SpecialInstructions.value);
+})
+
 PlaceOrderButton.addEventListener("click",async e=>{
     if(!await confirm("Are You sure you want to place your Order?")) return;
     console.log("Processing Order");
@@ -305,30 +381,29 @@ PlaceOrderButton.addEventListener("click",async e=>{
         console.error(result.error);
         return alert("Error placing Order!");
     }
-    console.log();
+    window.localStorage.removeItem("instructions");
+    window.localStorage.removeItem("order");
     return alert("Order Placed. We will send you an email once we acknowlege your order.", ()=>{window.location.reload()});
 });
 
 async function loadAccounts(){
     console.log("Attempting to load account Data");
     showLoading();
-    let result = await getAccounts();
-    if(result.error) result = await getAccounts();
-    if(result.error){
+    let accountsResult = await getAccounts();
+    if(accountsResult.error) accountsResult = await getAccounts();
+    if(accountsResult.error){
         alert(`Failed to Load Accounts!<br>Click OK to try again.`, loadAccounts);
         return;
     }
     console.log("Account Data Loaded");
-    let accounts = result.items;
+    let accounts = accountsResult.items;
     accounts.forEach(account=>{
         AllAccounts[account.title.toLowerCase()] = account;
-        /*let option = document.createElement("option");
-        option.value = account._id;
-        option.innerText = account.title;
-        UsernameSelect.appendChild(option);*/
     });
     document.getElementById("header").classList.remove("hidden");
     Loading.classList.add("hidden");
+    let loginResult = login();
+    if(!loginResult.error) return;
     LoginForm.querySelector("input[type=submit]").disabled = false;
     document.getElementById("username").focus();
 };

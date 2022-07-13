@@ -70,7 +70,7 @@ async function showOrdersList(){
         OrdersListContent.innerHTML = "<h1>Whoops!<br>You haven't made any orders through this website yet!</h1>";
         return;
     }
-    OrdersListContent.innerHTML = "<h3>(Currently limited to 50 items)</h3>"
+    // OrdersListContent.innerHTML = "<h3>(Currently limited to 50 items)</h3>"
     OrderHistory = result.items;
     let lastDate = new Date();
     let orderDiv = OrderTemplate.cloneNode(true);

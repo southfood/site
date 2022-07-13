@@ -1,4 +1,4 @@
-const SCRIPT_VERSION = "2.3";
+const SCRIPT_VERSION = "2.4";
 document.getElementById("version").innerHTML += `script:${SCRIPT_VERSION}&#10240;api:${API_VERSION}&#10240;globals:${GLOBALS_VERSION}`;
 const List = document.getElementById("list");
 const PriceTemplate = document.getElementById("price-template");
@@ -83,12 +83,37 @@ async function showOrdersList(){
             orderDiv.id = `order-${lastDate.getRawDate()}`;
             orderDiv.querySelector('.order-header').innerText = lastDate.toLocaleDateString();
         }
+        let id = `order-item-${lastDate.getRawDate()}-${item.itemId}`;
+        let alreadyMade = document.getElementById(id);
+        if(alreadyMade){
+            let itemText = alreadyMade.innerText.split("x");
+            let quantity = parseInt(itemText[0]) || 0;
+            quantity += item.quantity;
+            alreadyMade.innerText = `${quantity}x ${item.item}`;
+            return;
+        }
         let itemElem = OrderItemTemplate.cloneNode(true);
-        itemElem.id = `order-item-${lastDate.getRawDate()}-${item._id}`;
+        itemElem.id = id;
         itemElem.innerText = `${item.quantity}x ${item.item}`;
-        orderDiv.appendChild(itemElem);
+        itemElem.setAttribute("item-name", item.item);
+        let orderItems = orderDiv.querySelectorAll("div.order-item");
+        let placeBefore = null;
+        for(let i = 0; i < orderItems.length; ++i){
+            let testItem = orderItems[i];
+            let itemName = testItem.getAttribute("item-name");
+            if(itemName.localeCompare(item.item) == 1){
+                placeBefore = testItem;
+                break;
+            }
+        }
+        if(!placeBefore){
+            orderDiv.appendChild(itemElem);
+        }else{
+            orderDiv.insertBefore(itemElem, placeBefore);
+        }
         OrdersListContent.appendChild(orderDiv);
     });
+    if(OrderHistory.length == 80 && !OrdersListContent.querySelector(".order").isSameNode(OrdersListContent.lastElementChild)) OrdersListContent.lastElementChild.remove();
 }
 
 function closeOrdersList(){

@@ -1,9 +1,13 @@
-const SCRIPT_VERSION = "2.1";
+const SCRIPT_VERSION = "2.3";
 document.getElementById("version").innerHTML += `script:${SCRIPT_VERSION}&#10240;api:${API_VERSION}&#10240;globals:${GLOBALS_VERSION}`;
 const List = document.getElementById("list");
 const PriceTemplate = document.getElementById("price-template");
+const OrderTemplate = document.getElementById("order-template");
+const OrderItemTemplate = document.getElementById("order-item-template");
 const Template = document.getElementById("template");
 PriceTemplate.id = "";
+OrderTemplate.id = "";
+OrderItemTemplate.id = "";
 Template.id = "";
 const Numpad = document.getElementById("numpad");
 var SelectedCategory = document.querySelector(".tab.selected");
@@ -13,6 +17,7 @@ const PreviewInfo = document.getElementById("preview-info");
 PreviewInfo.querySelector(".price").replaceWith(PriceTemplate.cloneNode(true));
 const SpecialInstructions = document.getElementById("special-instructions");
 const FavouritesButton = document.getElementById("favourites-button");
+const OrdersButton = document.getElementById("previous-orders-button");
 const LoginForm = document.getElementById("login-form");
 const UsernameSelect = document.getElementById("username");
 const Countdown = document.getElementById("countdown");
@@ -23,6 +28,9 @@ const Menu = document.getElementById("menu");
 const TabsSpacer = document.getElementById("tabs-spacer");
 const TabList = document.getElementById("tab-list");
 TabsSpacer.appendChild(TabList);
+const OrdersDisplay = document.getElementById("orders-background");
+const OrdersList = document.getElementById("orders-list");
+const OrdersListContent = document.getElementById("orders-list-content");
 
 function login(){
     let accountInfo = JSON.parse(window.localStorage.getItem("account")) || new FormData(LoginForm);
@@ -44,6 +52,46 @@ async function logout(){
     if(!await confirm("Are you sure you want to Log Out?")) return;
     window.localStorage.clear();
     window.location.reload();
+}
+
+Date.prototype.getRawDate = function(){
+    return Math.floor(this.valueOf()/(1000*60*60*24));
+};
+
+var OrderHistory = [];
+async function showOrdersList(){
+    OrdersDisplay.classList.remove("hidden");
+    if(OrderHistory.length) return;
+    showLoading();
+    let result = await getOrders(UserData._id);
+    Loading.classList.add("hidden");
+    if(result.error) return alert(`Error Loading Previous Orders!`, closeOrdersList);
+    if(!result.length){
+        OrdersListContent.innerHTML = "<h1>Whoops!<br>You haven't made any orders through this website yet!</h1>";
+        return;
+    }
+    OrderHistory = result.items;
+    let lastDate = new Date();
+    let orderDiv = OrderTemplate.cloneNode(true);
+    OrderHistory.forEach((item, i) => {
+        let itemDate = new Date(item._createdDate);
+        if(itemDate.getRawDate() < lastDate.getRawDate() || !i){
+            if(i) OrdersListContent.appendChild(document.createElement("hr"));
+            lastDate = itemDate;
+            orderDiv = OrderTemplate.cloneNode(true);
+            orderDiv.id = `order-${lastDate.getRawDate()}`;
+            orderDiv.querySelector('.order-header').innerText = lastDate.toLocaleDateString();
+        }
+        let itemElem = OrderItemTemplate.cloneNode(true);
+        itemElem.id = `order-item-${lastDate.getRawDate()}-${item._id}`;
+        itemElem.innerText = `${item.quantity}x ${item.item}`;
+        orderDiv.appendChild(itemElem);
+        OrdersListContent.appendChild(orderDiv);
+    });
+}
+
+function closeOrdersList(){
+    OrdersDisplay.classList.add('hidden');
 }
 
 async function saveOrder(){
@@ -149,12 +197,12 @@ function updateTabs(){
 
     PreviewTab.setAttribute("items-present", "");
     let disablePreview = document.querySelector("li.selected") ? 'false' : 'true';
-    for(const elem of document.querySelectorAll(".ordering")) elem.ariaDisabled = disablePreview;
+    for(const elem of document.querySelectorAll(".ordering")) elem.setAttribute("aria-disabled", disablePreview);
 }
 
 document.querySelectorAll(".tab").forEach(tab=>{
     tab.addEventListener("click",e=>{
-        if(e.target.isSameNode(SelectedCategory) || e.target.ariaDisabled == 'true')return;
+        if(e.target.isSameNode(SelectedCategory) || e.target.getAttribute('aria-disabled') == 'true') return;
         e.target.classList.add("selected");
         if(SelectedCategory) SelectedCategory.classList.remove("selected");
         SelectedCategory = e.target;
@@ -216,7 +264,7 @@ function selectionHandler(e){
         e.target.checked = !e.target.checked;
         let isFavourite = li.classList.contains("favourite");
         li.classList[isFavourite ? "remove" : "add"]("favourite");
-        FavouritesTab.ariaDisabled = document.querySelector("li.favourite") ? 'false' : 'true';
+        FavouritesTab.setAttribute('aria-disabled', document.querySelector("li.favourite") ? 'false' : 'true');
         updateTabs();
         return;
     }
@@ -323,7 +371,7 @@ async function loadList(){
         newLI.id = item._id;
         if(UserData.favourites.includes(item._id)){
             newLI.classList.add('favourite');
-            FavouritesTab.ariaDisabled = 'false';
+            FavouritesTab.setAttribute('aria-disabled', 'false');
         }
         newLI.querySelector("label").setAttribute("for","selector"+item._id);
         newLI.querySelector("label").insertAdjacentText('beforeEnd',item.title);
@@ -345,14 +393,15 @@ async function loadList(){
         }
     });
     FavouritesButton.disabled = false;
+    OrdersButton.disabled = false;
     Loading.classList.add("hidden");
     updateTabs();
 }
 
-var doCountdown = false;
+// var doCountdown = false;
 Loading.addEventListener("animationiteration",e=>{
-    doCountdown = !doCountdown;
-    if(!doCountdown) return;
+    // doCountdown = !doCountdown;
+    // if(!doCountdown) return;
     let seconds = parseInt(Countdown.innerText);
     seconds = Math.max(0, seconds-1);
     Countdown.innerText = seconds;

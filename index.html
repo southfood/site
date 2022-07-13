@@ -12,7 +12,7 @@
         <script src="api.js"></script>
     </head>
     <body>
-        <span id="version">page:2.1&#10240;</span>
+        <span id="version">page:2.3&#10240;</span>
         <div class="hidden" id="header">
             <h1 id="name"></h1>
             <form id="login-form">
@@ -25,6 +25,7 @@
             </form>
             <div id="menu">
                 <button disabled id="favourites-button" onclick="favouritesModeToggle(true)">Edit Favourites</button>
+                <button disabled id="previous-orders-button" onclick="showOrdersList()">Previous Orders</button>
                 <button onclick="logout()" id="logout-button">Log Out</button>
             </div>
         </div>
@@ -67,12 +68,16 @@
                 <button class="numpad-button goodbutton" onclick="closeNumpad()" disabled id="numpad-ok">&checkmark;</button>
             </div>
         </div>
-        <div class="loader" id="loading">
-            <span id="loading-text">
-                <span></span>
-                <span style="text-align:center">Loading...<br><span id="countdown">30</span></span>
-                <span>If this takes longer than 30 seconds, try reloading the page.</span>
-            </span>
+        <div id="orders-background" class="hidden dialog">
+            <div id="orders-list">
+                <button id="close-orders-list" class="badbutton" onclick="closeOrdersList()">&cross;</button>
+                <div id="orders-list-content"></div>
+            </div>
+        </div>
+        <div id="loading">
+            <div id="loading-graphic"></div>
+            <span id="loading-text">Loading...</span>
+            <span id="countdown">30</span>
         </div>
         <div class="hidden dialog" id="alert">
             <div>
@@ -91,6 +96,12 @@
             <span id="price-template" class="price">
                 <span class="money-sign">$</span><span class="dollars">0</span>.<span class="cents">00</span>
             </span>
+            <div class="order" id="order-template">
+                <h6 class="order-header"></h6>
+            </div>
+            <div class="order-item" id="order-item-template">
+
+            </div>
             <li id="template">
                 <label>
                     <img class="star" src="star.png" width="15">

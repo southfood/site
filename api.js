@@ -1,5 +1,5 @@
 const URL = "https://southlandfoodco-op.wixsite.com/website/_functions/";
-const API_VERSION = "2.1";
+const API_VERSION = "2.3";
 var wait5sec = new Promise(resolve => {
     window.setTimeout(resolve(), 5000);
 });
@@ -18,7 +18,7 @@ async function getAccounts(){
 }
 
 async function getPriceList(){
-    return await API("pricelist")
+    return await API("pricelist");
 }
 
 // async function login(data){
@@ -28,6 +28,12 @@ async function getPriceList(){
 //     }
 //     return await API("login", url);
 // }
+
+async function getOrders(uid){
+    let url = new URLSearchParams();
+    url.append('uid', uid);
+    return await API("orderhistory", url);
+}
 
 async function saveFavourites(uid, favourites){
     let url = new URLSearchParams();

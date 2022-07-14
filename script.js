@@ -23,6 +23,7 @@ const UsernameSelect = document.getElementById("username");
 const Countdown = document.getElementById("countdown");
 const Loading = document.getElementById("loading");
 const PlaceOrderButton = document.getElementById("place-order");
+const CancelOrderButton = document.getElementById("cancel-order");
 const FavouritesCancel = document.getElementById("favourites-cancel");
 const Menu = document.getElementById("menu");
 const TabsSpacer = document.getElementById("tabs-spacer");
@@ -442,7 +443,17 @@ SpecialInstructions.addEventListener("input",e=>{
     window.localStorage.setItem("instructions", SpecialInstructions.value);
 })
 
-PlaceOrderButton.addEventListener("click",async e=>{
+async function cancelOrder(e, confirmFirst = true){
+    if(confirmFirst && !await confirm("Are You sure you want to Cancel your Order?")) return;
+    SpecialInstructions.value = "";
+    List.querySelectorAll("li.selected").forEach(li=>{
+        li.querySelector("input[type=checkbox]").click();
+    });
+    FavouritesTab.nextElementSibling.click();
+    console.log("Removed Order");
+}
+
+async function placeOrder(e){
     if(!await confirm("Are You sure you want to place your Order?")) return;
     console.log("Processing Order");
     alert("Processing...");
@@ -456,10 +467,17 @@ PlaceOrderButton.addEventListener("click",async e=>{
         console.error(result.error);
         return alert("Error placing Order!");
     }
-    window.localStorage.removeItem("instructions");
-    window.localStorage.removeItem("order");
-    return alert("Order Placed. We will send you an email once we acknowlege your order.", ()=>{window.location.reload()});
-});
+    // window.localStorage.removeItem("instructions");
+    // window.localStorage.removeItem("order");
+    console.log("Order Processed");
+    return alert("Order Placed. We will send you an email once we acknowlege your order.", ()=>{
+        // window.location.reload();
+        cancelOrder(e, false);
+    });
+}
+
+PlaceOrderButton.addEventListener("click", placeOrder);
+CancelOrderButton.addEventListener("click", cancelOrder);
 
 async function loadAccounts(){
     console.log("Attempting to load account Data");

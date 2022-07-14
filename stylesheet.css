@@ -427,7 +427,11 @@ li > * > * > *{
     right:0px;
 }
 
-#place-order{
+#order-menu-buttons{
+    width:100%;
+    max-width:20em;
+    display:flex;
+    justify-content: space-evenly;
     margin:3em;
 }
 

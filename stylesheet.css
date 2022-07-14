@@ -346,7 +346,7 @@ li > * > * > *{
 }
 
 #numpad.shown{
-    top:min(calc(100vh - 17em), 50vh);
+    top:max(0px, min(calc(100% - 11em - 6px), max(3.5em, min(calc(100% - 13em), 50%))));
     opacity:1;
 }
 

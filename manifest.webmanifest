@@ -1,5 +1,6 @@
 {
     "background_color":"#c8ffe6",
+    "display":"standalone",
     "description":"Southland Food Co-op Ordering Website",
     "icons":[
         {

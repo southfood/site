@@ -184,7 +184,10 @@ function categoryRule(category){
         case 'review order':
             return (li)=>{return li.classList.contains('selected')};
         default:
-            return (li, data)=>{return data.category.includes(category);}
+            return (li, data)=>{
+                let tags = data.category || [];
+                return tags.includes(category);
+            }
     }
 }
 
@@ -393,6 +396,7 @@ async function loadList(){
     const SavedOrder = JSON.parse(window.localStorage.getItem("order")) || {};
     SpecialInstructions.value = window.localStorage.getItem("instructions");
     PriceList.forEach(item => {
+        if(!item.title) return console.warn("empty item", item);
         IndexedList[item._id] = item;
         let newLI = Template.cloneNode(true);
         newLI.id = item._id;
